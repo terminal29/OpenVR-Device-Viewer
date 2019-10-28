@@ -14,9 +14,15 @@ OpenVRClient::OpenVRClient()
 
 std::vector<std::pair<vr::TrackedDeviceIndex_t, vr::TrackedDevicePose_t>> OpenVRClient::getPoses()
 {
-
-
-    return std::vector<std::pair<vr::TrackedDeviceIndex_t, vr::TrackedDevicePose_t>>();
+    std::vector<std::pair<vr::TrackedDeviceIndex_t, vr::TrackedDevicePose_t>> poses;
+    for (auto i = 0u; i < vr::k_unMaxTrackedDeviceCount; i++) {
+        if (vr::VRSystem()->IsTrackedDeviceConnected(i)) {
+            vr::TrackedDevicePose_t pose;
+            vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::ETrackingUniverseOrigin::TrackingUniverseRawAndUncalibrated, 0, &pose, 1);
+            poses.push_back({ i, pose });
+        }
+    }
+    return poses;
 }
 
 std::vector<std::pair<std::string, bool>> OpenVRClient::getDrivers()
@@ -33,8 +39,12 @@ std::vector<std::pair<std::string, bool>> OpenVRClient::getDrivers()
         driver_info.push_back({ driver_name_cstr, is_driver_enabled });
         delete[] driver_name_cstr;
     }
-
     return driver_info;
+}
+
+DeviceProperties OpenVRClient::getProperties(vr::TrackedDeviceIndex_t index)
+{
+    return DeviceProperties();
 }
 
 OpenVRClient::~OpenVRClient()

@@ -2,9 +2,12 @@
 
 #include <vector>
 #include <array>
+#include <optional>
 
 #include <openvr.h>
 #include <openvr_capi.h>
+
+#include <DeviceProperties.hpp>
 
 class OpenVRClient {
 public:
@@ -28,10 +31,16 @@ public:
     std::vector<std::pair<std::string, bool>> getDrivers();
 
     /// <summary>
+    /// Gets the properties for a device
+    /// </summary>
+    /// <param name="index">Index of the device</param>
+    /// <returns>Filled DeviceProperties instance</returns>
+    DeviceProperties getProperties(vr::TrackedDeviceIndex_t index);
+
+    /// <summary>
     /// Closes the OpenVR client
     /// </summary>
     ~OpenVRClient();
 private:
     vr::IVRSystem* m_vrSystem = nullptr;
-    std::array<vr::TrackedDevicePose_t, vr::k_unMaxTrackedDeviceCount> m_poseCache = { 0 };
 };

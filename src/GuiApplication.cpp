@@ -11,5 +11,9 @@ std::optional<GuiApplication::ErrorCode> GuiApplication::run()
     for (auto driver : drivers) {
         std::cout << driver.first.c_str() << "\t:\t" << driver.second << std::endl;
     }
+    auto poses = m_client->getPoses();
+    for (auto pose : poses) {
+        std::cout << pose.first << "std::endl";
+    }
     return std::nullopt;
 }
