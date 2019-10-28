@@ -2,7 +2,12 @@
 using namespace vr;
 #define MAKE_PROPNAME(name) {name, std::string(#name)}
 
-const std::vector<std::pair<DeviceProperties::PropKey, DeviceProperties::PropName>> DeviceProperties::m_propertyKeys = {
+const std::map<DeviceProperties::PropKey, DeviceProperties::PropName> DeviceProperties::m_propertyKeys = {
+    MAKE_PROPNAME(Prop_TrackingSystemName_String),
+    MAKE_PROPNAME(Prop_ModelNumber_String),
+    MAKE_PROPNAME(Prop_SerialNumber_String),
+    MAKE_PROPNAME(Prop_RenderModelName_String),
+    MAKE_PROPNAME(Prop_WillDriftInYaw_Bool),
     MAKE_PROPNAME(Prop_ManufacturerName_String),
     MAKE_PROPNAME(Prop_TrackingFirmwareVersion_String),
     MAKE_PROPNAME(Prop_HardwareRevision_String),

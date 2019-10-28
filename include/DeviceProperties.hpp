@@ -15,6 +15,6 @@ struct DeviceProperties {
 
     std::optional<PropVal> getProperty(PropKey key);
 
-    const static std::vector<std::pair<PropKey, PropName>> m_propertyKeys;
+    const static std::map<PropKey, PropName> m_propertyKeys;
     std::map<PropKey, PropVal> m_propertyValues;
 };
