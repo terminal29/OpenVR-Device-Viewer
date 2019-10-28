@@ -53,10 +53,11 @@ DeviceProperties OpenVRClient::getProperties(vr::TrackedDeviceIndex_t index)
             props.setProperty(propKey.first, std::to_string(value));
             continue;
         }
+        if (error == vr::ETrackedPropertyError::TrackedProp_UnknownProperty)
+            continue;
         
         // Get if it is a string value
-        auto len = vr::VRSystem()->GetStringTrackedDeviceProperty(index, propKey.first, nullptr, 0, &error);
-        if (len > 0 && error == vr::ETrackedPropertyError::TrackedProp_Success) {
+        if (auto len = vr::VRSystem()->GetStringTrackedDeviceProperty(index, propKey.first, nullptr, 0, &error);  len > 0) {
             std::unique_ptr<char> strValue(new char[len]);
             vr::VRSystem()->GetStringTrackedDeviceProperty(index, propKey.first, strValue.get(), len, &error);
             if (error == vr::ETrackedPropertyError::TrackedProp_Success) {
@@ -64,6 +65,34 @@ DeviceProperties OpenVRClient::getProperties(vr::TrackedDeviceIndex_t index)
                 continue;
             }
         }
+        if (error == vr::ETrackedPropertyError::TrackedProp_UnknownProperty)
+            continue;
+
+        // Get if it is a uint64
+        if (auto value = vr::VRSystem()->GetUint64TrackedDeviceProperty(index, propKey.first, &error); error == vr::ETrackedPropertyError::TrackedProp_Success) {
+            props.setProperty(propKey.first, std::to_string(value));
+            continue;
+        }
+        if (error == vr::ETrackedPropertyError::TrackedProp_UnknownProperty)
+            continue;
+
+        // Get if it is an float
+        if (auto value = vr::VRSystem()->GetFloatTrackedDeviceProperty(index, propKey.first, &error); error == vr::ETrackedPropertyError::TrackedProp_Success) {
+            props.setProperty(propKey.first, std::to_string(value));
+            continue;
+        }
+        if (error == vr::ETrackedPropertyError::TrackedProp_UnknownProperty)
+            continue;
+
+        // Get if it is an int32
+        if (auto value = vr::VRSystem()->GetInt32TrackedDeviceProperty(index, propKey.first, &error); error == vr::ETrackedPropertyError::TrackedProp_Success) {
+            props.setProperty(propKey.first, std::to_string(value));
+            continue;
+        }
+        if (error == vr::ETrackedPropertyError::TrackedProp_UnknownProperty)
+            continue;
+
+
 
         // Get unknown value
         props.setProperty(propKey.first, "<unknown value type>");
