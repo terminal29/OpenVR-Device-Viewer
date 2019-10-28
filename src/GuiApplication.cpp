@@ -7,5 +7,9 @@ GuiApplication::GuiApplication():
 
 std::optional<GuiApplication::ErrorCode> GuiApplication::run()
 {
+    auto drivers = m_client->getDrivers();
+    for (auto driver : drivers) {
+        std::cout << driver.first.c_str() << "\t:\t" << driver.second << std::endl;
+    }
     return std::nullopt;
 }

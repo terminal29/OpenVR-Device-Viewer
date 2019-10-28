@@ -22,9 +22,16 @@ public:
     std::vector<std::pair<vr::TrackedDeviceIndex_t, vr::TrackedDevicePose_t>> getPoses();
 
     /// <summary>
+    /// Gets a list of loaded driver names and whether they are activated
+    /// </summary>
+    /// <returns>Vector of driver names and activation status</returns>
+    std::vector<std::pair<std::string, bool>> getDrivers();
+
+    /// <summary>
     /// Closes the OpenVR client
     /// </summary>
     ~OpenVRClient();
 private:
+    vr::IVRSystem* m_vrSystem = nullptr;
     std::array<vr::TrackedDevicePose_t, vr::k_unMaxTrackedDeviceCount> m_poseCache = { 0 };
 };

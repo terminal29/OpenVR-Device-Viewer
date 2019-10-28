@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <optional>
+#include <iostream>
 
 #include <imgui.h>
 #include <OpenVRClient.hpp>
