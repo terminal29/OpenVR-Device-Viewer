@@ -13,7 +13,7 @@ std::optional<GuiApplication::ErrorCode> GuiApplication::run()
     }
     auto poses = m_client->getPoses();
     for (auto pose : poses) {
-        std::cout << pose.first << "std::endl";
+        std::cout << "Device: " << pose.first << std::endl;
     }
     return std::nullopt;
 }

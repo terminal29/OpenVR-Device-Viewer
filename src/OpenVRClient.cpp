@@ -44,7 +44,31 @@ std::vector<std::pair<std::string, bool>> OpenVRClient::getDrivers()
 
 DeviceProperties OpenVRClient::getProperties(vr::TrackedDeviceIndex_t index)
 {
-    return DeviceProperties();
+    DeviceProperties props;
+    for (auto propKey : DeviceProperties::m_propertyKeys) {
+        vr::ETrackedPropertyError error;
+
+        // Get if it is a bool value
+        if (bool value = vr::VRSystem()->GetBoolTrackedDeviceProperty(index, propKey.first, &error); error == vr::ETrackedPropertyError::TrackedProp_Success) {
+            props.setProperty(propKey.first, std::to_string(value));
+            continue;
+        }
+        
+        // Get if it is a string value
+        auto len = vr::VRSystem()->GetStringTrackedDeviceProperty(index, propKey.first, nullptr, 0, &error);
+        if (len > 0 && error == vr::ETrackedPropertyError::TrackedProp_Success) {
+            std::unique_ptr<char> strValue(new char[len]);
+            vr::VRSystem()->GetStringTrackedDeviceProperty(index, propKey.first, strValue.get(), len, &error);
+            if (error == vr::ETrackedPropertyError::TrackedProp_Success) {
+                props.setProperty(propKey.first, strValue.get());
+                continue;
+            }
+        }
+
+        // Get unknown value
+        props.setProperty(propKey.first, "<unknown value type>");
+    }
+    return props;
 }
 
 OpenVRClient::~OpenVRClient()
