@@ -9,7 +9,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 file(GLOB_RECURSE SOURCES src/*.cpp)
 file(GLOB_RECURSE HEADERS include/*.hpp include/*.h)
 
-file(GLOB IMGUI_SOURCES 3rdparty/imgui/*.cpp)
+file(GLOB IMGUI_SOURCES 3rdparty/imgui/*.cpp 3rdparty/imgui/examples/imgui_impl_glfw.cpp)
 file(GLOB IMGUI_HEADERS 3rdparty/imgui/*.h 3rdparty/imgui/*.hpp)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -22,6 +22,16 @@ target_include_directories(OpenVR_Device_Viewer PUBLIC 3rdparty/openvr/headers)
 target_link_libraries(OpenVR_Device_Viewer ${CMAKE_SOURCE_DIR}/3rdparty/openvr/lib/win64/openvr_api.lib)
 file(COPY ${CMAKE_SOURCE_DIR}/3rdparty/openvr/bin/win64/openvr_api.dll DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Debug)
 
-#Imgui headers and sources
+# Imgui headers and sources
 target_include_directories(OpenVR_Device_Viewer PUBLIC 3rdparty/imgui)
+target_include_directories(OpenVR_Device_Viewer PUBLIC 3rdparty/imgui/examples)
 add_library(imgui ${IMGUI_SOURCES} ${IMGUI_HEADERS})
+
+# GLFW headers and sources
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "Docs")
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Examples")
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "Tests")
+add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/glfw/)
+add_dependencies(OpenVR_Device_Viewer glfw)
+target_include_directories(OpenVR_Device_Viewer PUBLIC 3rdparty/glfw/include)
+target_link_libraries(OpenVR_Device_Viewer glfw ${GLFW_LIBRARIES})
