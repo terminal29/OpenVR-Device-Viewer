@@ -9,7 +9,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 file(GLOB_RECURSE SOURCES src/*.cpp)
 file(GLOB_RECURSE HEADERS include/*.hpp include/*.h)
 
-file(GLOB IMGUI_SOURCES 3rdparty/imgui/*.cpp 3rdparty/imgui/examples/imgui_impl_glfw.cpp)
+file(GLOB IMGUI_SOURCES 3rdparty/imgui/*.cpp)
 file(GLOB IMGUI_HEADERS 3rdparty/imgui/*.h 3rdparty/imgui/*.hpp)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -35,3 +35,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/glfw/)
 add_dependencies(OpenVR_Device_Viewer glfw)
 target_include_directories(OpenVR_Device_Viewer PUBLIC 3rdparty/glfw/include)
 target_link_libraries(OpenVR_Device_Viewer glfw ${GLFW_LIBRARIES})
+
+# GLEW headers and libs
+target_include_directories(OpenVR_Device_Viewer PUBLIC 3rdparty/glew-2.1.0/include)
+target_link_libraries(OpenVR_Device_Viewer ${CMAKE_SOURCE_DIR}/3rdparty/glew-2.1.0/lib/Release/x64/glew32s.lib)
