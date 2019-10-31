@@ -5,6 +5,7 @@
 #include <iostream>
 #include <iomanip>
 
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #define IMGUI_IMPL_OPENGL_LOADER_GLEW
 #include <imgui.h>

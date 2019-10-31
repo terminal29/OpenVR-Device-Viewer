@@ -1,29 +1,36 @@
 #include <GuiApplication.hpp>
 
-GuiApplication::GuiApplication():
+GuiApplication::GuiApplication() :
     m_client(std::make_unique<OpenVRClient>())
 {
     // GLFW init
     glfwSetErrorCallback(GuiApplication::errorCallback);
-    if (!glfwInit())
-        throw std::exception("glfwInit() failed");
+    if (int err = glfwInit(); !err)
+        throw std::exception(("glfwInit() failed with " + std::to_string(err)).c_str());
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2); 
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     this->m_window = glfwCreateWindow(1280, 720, "OpenVR Device Viewer", NULL, NULL);
     if (this->m_window == nullptr)
         throw std::exception("glfwCreateWindow() failed");
     glfwMakeContextCurrent(this->m_window);
     glfwSwapInterval(1);
 
+    if (GLint err = glewInit(); err != GLEW_OK)
+        throw std::exception(("glewInit() failed with " + std::to_string(err)).c_str());
+
     // IMGUI init
     ImGui::CreateContext();
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(this->m_window, true);
-    ImGui_ImplOpenGL3_Init(this->m_glslVersion);
 
+    if (!ImGui_ImplOpenGL3_Init(this->m_glslVersion)) {
+        throw std::exception("ImGui_ImplOpenGL3_Init() failed");
+    }
 
-
+    if (!ImGui_ImplGlfw_InitForOpenGL(this->m_window, true)) {
+        throw std::exception("ImGui_ImplGlfw_InitForOpenGL() failed");
+    }
 }
 
 GuiApplication::~GuiApplication()
