@@ -26,6 +26,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/3rdparty/openvr/bin/win64/openvr_api.dll DESTINATI
 target_include_directories(OpenVR_Device_Viewer PUBLIC 3rdparty/imgui)
 target_include_directories(OpenVR_Device_Viewer PUBLIC 3rdparty/imgui/examples)
 add_library(imgui ${IMGUI_SOURCES} ${IMGUI_HEADERS})
+target_link_libraries(OpenVR_Device_Viewer $<TARGET_LINKER_FILE:imgui>)
 
 # GLFW headers and sources
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "Docs")
@@ -38,4 +39,7 @@ target_link_libraries(OpenVR_Device_Viewer glfw ${GLFW_LIBRARIES})
 
 # GLEW headers and libs
 target_include_directories(OpenVR_Device_Viewer PUBLIC 3rdparty/glew-2.1.0/include)
-target_link_libraries(OpenVR_Device_Viewer ${CMAKE_SOURCE_DIR}/3rdparty/glew-2.1.0/lib/Release/x64/glew32s.lib)
+target_link_libraries(OpenVR_Device_Viewer ${CMAKE_SOURCE_DIR}/3rdparty/glew-2.1.0/lib/Release/x64/glew32.lib)
+file(COPY ${CMAKE_SOURCE_DIR}/3rdparty/glew-2.1.0/bin/Release/x64/glew32.dll DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Debug)
+find_package(OpenGL REQUIRED)
+target_link_libraries(OpenVR_Device_Viewer ${OPENGL_gl_LIBRARY})
