@@ -66,50 +66,30 @@ std::optional<GuiApplication::ErrorCode> GuiApplication::run()
     }
     return std::nullopt;*/
 
-    while (!glfwWindowShouldClose(this->m_window))
+    while (!glfwWindowShouldClose(this->m_window) && !this->m_doExit)
     {
-        // Poll and handle events (inputs, window resize, etc.)
-        // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-        // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-        // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-        // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
-        glfwPollEvents();
+        if (this->m_doRefresh) {
+            this->m_doRefresh = false;
+            this->m_driverInfoCache = this->m_client->getDrivers();
+            this->m_devicePoseCache = this->m_client->getPoses();
+            this->m_devicePropsCache.clear();
+            this->m_devicePropsCache.reserve(this->m_devicePoseCache.size());
 
-        // Start the Dear ImGui frame
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
-        {
-            static float f = 0.0f;
-            static int counter = 0;
-
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
-
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-            ImGui::End();
+            std::for_each(this->m_devicePoseCache.begin(), this->m_devicePoseCache.end(), [&](auto pose) {this->m_devicePropsCache.push_back(std::make_pair(pose.first, this->m_client->getProperties(pose.first))); });
         }
 
-
-        // Rendering
-        ImGui::Render();
-        int display_w, display_h;
-        glfwGetFramebufferSize(this->m_window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
-        glClearColor(this->m_clearColor.x, this->m_clearColor.y, this->m_clearColor.z, this->m_clearColor.w);
-        glClear(GL_COLOR_BUFFER_BIT);
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-        glfwSwapBuffers(this->m_window);
+        this->beginFrame();
+        {
+            if (ImGui::BeginMainMenuBar()) {
+                if (ImGui::BeginMenu("File")) {
+                    ImGui::MenuItem("Refresh", NULL, &this->m_doRefresh);
+                    ImGui::MenuItem("Exit", NULL, &this->m_doExit);
+                    ImGui::EndMenu();
+                }
+                ImGui::EndMainMenuBar();
+            }
+        }
+        this->endFrame();
     }
     return std::nullopt;
 
@@ -119,4 +99,25 @@ std::optional<GuiApplication::ErrorCode> GuiApplication::run()
 void GuiApplication::errorCallback(int error, const char* description)
 {
     std::cout << "Window Error [" << error << "]: " << description << std::endl;
+}
+
+void GuiApplication::beginFrame()
+{
+    glfwPollEvents();
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+}
+
+void GuiApplication::endFrame()
+{
+    ImGui::Render();
+    int display_w, display_h;
+    glfwGetFramebufferSize(this->m_window, &display_w, &display_h);
+    glViewport(0, 0, display_w, display_h);
+    glClearColor(this->m_clearColor.x, this->m_clearColor.y, this->m_clearColor.z, this->m_clearColor.w);
+    glClear(GL_COLOR_BUFFER_BIT);
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    glfwSwapBuffers(this->m_window);
 }

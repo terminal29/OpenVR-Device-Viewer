@@ -30,5 +30,16 @@ private:
 
     constexpr const static auto m_glslVersion{ "#version 130" };
     GLFWwindow* m_window = nullptr;
-    ImVec4 m_clearColor{ 0.45f, 0.55f, 0.60f, 1.00f };
+    ImVec4 m_clearColor{ 0.05f, 0.05f, 0.05f, 1.00f };
+
+    void beginFrame();
+
+    void endFrame();
+
+    bool m_doRefresh = true;
+    bool m_doExit = false;
+
+    std::vector<std::pair<std::string, bool>> m_driverInfoCache;
+    std::vector<std::pair<vr::TrackedDeviceIndex_t, vr::TrackedDevicePose_t>> m_devicePoseCache;
+    std::vector< std::pair<vr::TrackedDeviceIndex_t, DeviceProperties>> m_devicePropsCache;
 };
