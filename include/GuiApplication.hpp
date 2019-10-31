@@ -41,5 +41,5 @@ private:
 
     std::vector<std::pair<std::string, bool>> m_driverInfoCache;
     std::vector<std::pair<vr::TrackedDeviceIndex_t, vr::TrackedDevicePose_t>> m_devicePoseCache;
-    std::vector< std::pair<vr::TrackedDeviceIndex_t, DeviceProperties>> m_devicePropsCache;
+    std::vector<std::pair<vr::TrackedDeviceIndex_t, DeviceProperties>> m_devicePropsCache;
 };

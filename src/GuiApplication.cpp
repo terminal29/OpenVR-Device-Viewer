@@ -81,13 +81,41 @@ std::optional<GuiApplication::ErrorCode> GuiApplication::run()
         this->beginFrame();
         {
             if (ImGui::BeginMainMenuBar()) {
+
                 if (ImGui::BeginMenu("File")) {
                     ImGui::MenuItem("Refresh", NULL, &this->m_doRefresh);
                     ImGui::MenuItem("Exit", NULL, &this->m_doExit);
                     ImGui::EndMenu();
                 }
+
+                if (ImGui::BeginMenu("Drivers")) {
+                    for (auto driver : this->m_driverInfoCache) {
+                        bool selected = false;
+                        ImGui::MenuItem(driver.first.c_str(), NULL, &selected);
+                        if (selected) {
+                            // make driver window
+                        }
+                    }
+                    ImGui::EndMenu();
+                }
+
+                if (ImGui::BeginMenu("Devices")) {
+                    for (auto device : this->m_devicePropsCache) {
+                        bool selected = false;
+                        ImGui::MenuItem((device.second.getProperty(vr::Prop_ModelNumber_String).value_or("Unnamed") + " (" + device.second.getProperty(vr::Prop_SerialNumber_String).value_or("") + ")").c_str(), NULL, &selected);
+                        if (selected) {
+                            // make device window
+                        }
+                    }
+                    ImGui::EndMenu();
+                }
+
                 ImGui::EndMainMenuBar();
             }
+
+
+
+
         }
         this->endFrame();
     }
