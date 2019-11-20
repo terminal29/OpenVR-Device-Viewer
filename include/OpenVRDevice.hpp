@@ -14,10 +14,11 @@ public:
 
     vr::TrackedDevicePose_t getPose();
 
+    vr::TrackedDeviceIndex_t getIndex();
+
     virtual ~OpenVRDevice() = default;
 
 private:
     std::shared_ptr<OpenVRClient> m_vrClient;
     vr::TrackedDeviceIndex_t m_deviceIndex;
-    DeviceProperties m_props;
 };

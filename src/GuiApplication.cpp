@@ -57,9 +57,22 @@ std::optional<GuiApplication::ErrorCode> GuiApplication::run()
                 }
             );
 
-            this->m_deviceWindows.clear();
+            // Remove all windows for devices that are not connected
+            this->m_deviceWindows.erase(std::remove_if(this->m_deviceWindows.begin(), this->m_deviceWindows.end(), [&](std::unique_ptr<DeviceWindow>& deviceWindow) {
+                return !deviceWindow->getDevice()->isConnected();
+            }), this->m_deviceWindows.end()); 
+
+            // Add (or skip) windows for new devices that are connected
             for (vr::TrackedDeviceIndex_t idx = 0; idx < vr::k_unMaxTrackedDeviceCount; idx++) {
                 if (this->m_vrClient->isDeviceConnected(idx)) {
+                    // If we already have this device, continue
+                    if (std::find_if(this->m_deviceWindows.begin(), this->m_deviceWindows.end(),
+                        [&](std::unique_ptr<DeviceWindow>& deviceWindow) {
+                            return deviceWindow->getDevice()->getIndex() == idx;
+                        }
+                    ) != this->m_deviceWindows.end()) {
+                        continue;
+                    }
                     this->m_deviceWindows.push_back(std::make_unique<DeviceWindow>(std::make_shared<OpenVRDevice>(this->m_vrClient, idx)));
                 }
             }

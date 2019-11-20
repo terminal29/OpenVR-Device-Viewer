@@ -11,6 +11,8 @@ public:
 
     std::string getWindowName();
 
+    std::shared_ptr<OpenVRDevice> getDevice();
+
     void show();
 
     void hide();

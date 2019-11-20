@@ -2,14 +2,13 @@
 
 OpenVRDevice::OpenVRDevice(std::shared_ptr<OpenVRClient> openvr_client, vr::TrackedDeviceIndex_t device_index):
     m_vrClient(openvr_client), 
-    m_deviceIndex(device_index), 
-    m_props(this->m_vrClient->getProperties(this->m_deviceIndex)) // Only need to get props once because they dont change
+    m_deviceIndex(device_index)
 {
 }
 
 DeviceProperties OpenVRDevice::getProperties()
 {
-    return this->m_props;
+    return this->m_vrClient->getProperties(this->m_deviceIndex);
 }
 
 bool OpenVRDevice::isConnected()
@@ -20,4 +19,9 @@ bool OpenVRDevice::isConnected()
 vr::TrackedDevicePose_t OpenVRDevice::getPose()
 {
     return this->m_vrClient->getPose(this->m_deviceIndex);
+}
+
+vr::TrackedDeviceIndex_t OpenVRDevice::getIndex()
+{
+    return this->m_deviceIndex;
 }

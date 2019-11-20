@@ -12,6 +12,11 @@ std::string DeviceWindow::getWindowName()
     return this->m_windowName;
 }
 
+std::shared_ptr<OpenVRDevice> DeviceWindow::getDevice()
+{
+    return this->m_device;
+}
+
 void DeviceWindow::show()
 {
     this->m_isVisible = true;
