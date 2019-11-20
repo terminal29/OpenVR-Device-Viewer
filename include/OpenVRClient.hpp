@@ -19,10 +19,11 @@ public:
     OpenVRClient() noexcept(false);
 
     /// <summary>
-    /// Gets the index and pose of each connected device
+    /// Gets the pose for a single device
     /// </summary>
-    /// <returns>Vector of index and pose of connected devices</returns>
-    std::vector<std::pair<vr::TrackedDeviceIndex_t, vr::TrackedDevicePose_t>> getPoses();
+    /// <param name="device_index">Index of the device</param>
+    /// <returns>Device pose</returns>
+    vr::TrackedDevicePose_t getPose(vr::TrackedDeviceIndex_t device_index);
 
     /// <summary>
     /// Gets a list of loaded driver names and whether they are activated
@@ -35,7 +36,14 @@ public:
     /// </summary>
     /// <param name="index">Index of the device</param>
     /// <returns>Filled DeviceProperties instance</returns>
-    DeviceProperties getProperties(vr::TrackedDeviceIndex_t index);
+    DeviceProperties getProperties(vr::TrackedDeviceIndex_t device_index);
+
+    /// <summary>
+    /// Checks if a device is currently connected
+    /// </summary>
+    /// <param name="index">Index of the device</param>
+    /// <returns>True if the device is connected, false otherwise</returns>
+    bool isDeviceConnected(vr::TrackedDeviceIndex_t device_index);
 
     /// <summary>
     /// Closes the OpenVR client

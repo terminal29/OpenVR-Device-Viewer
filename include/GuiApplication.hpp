@@ -13,6 +13,7 @@
 #include <imgui_impl_opengl3.h>
 
 #include <OpenVRClient.hpp>
+#include <OpenVRDevice.hpp>
 
 class GuiApplication {
 public:
@@ -26,7 +27,7 @@ public:
     static void errorCallback(int error, const char* description);
 
 private:
-    std::unique_ptr<OpenVRClient> m_client;
+    std::shared_ptr<OpenVRClient> m_vrClient;
 
     constexpr const static auto m_glslVersion{ "#version 130" };
     GLFWwindow* m_window = nullptr;
@@ -39,7 +40,8 @@ private:
     bool m_doRefresh = true;
     bool m_doExit = false;
 
-    std::vector<std::pair<std::string, bool>> m_driverInfoCache;
-    std::vector<std::pair<vr::TrackedDeviceIndex_t, vr::TrackedDevicePose_t>> m_devicePoseCache;
-    std::vector<std::pair<vr::TrackedDeviceIndex_t, DeviceProperties>> m_devicePropsCache;
+    std::vector<std::tuple<std::string, bool, bool>> m_driverInfoCache;
+
+    std::vector<OpenVRDevice> m_devices;
+
 };

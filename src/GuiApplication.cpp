@@ -1,7 +1,7 @@
 #include <GuiApplication.hpp>
 
 GuiApplication::GuiApplication() :
-    m_client(std::make_unique<OpenVRClient>())
+    m_vrClient(std::make_shared<OpenVRClient>())
 {
     // GLFW init
     glfwSetErrorCallback(GuiApplication::errorCallback);
@@ -45,37 +45,24 @@ GuiApplication::~GuiApplication()
 
 std::optional<GuiApplication::ErrorCode> GuiApplication::run()
 {
-    /*auto drivers = m_client->getDrivers();
-    std::cout << "[ Drivers ]" << std::endl;
-    std::cout << std::endl;
-    for (auto driver : drivers) {
-        std::cout << std::left << std::setw(60) << "> " + driver.first << driver.second << std::endl;
-    }
-    std::cout << std::endl;
-    auto poses = m_client->getPoses();
-    std::cout << "[ Devices ]" << std::endl;
-    std::cout << std::endl;
-    for (auto pose : poses) {
-        DeviceProperties props = m_client->getProperties(pose.first);
-        std::string device_name = props.getProperty(vr::ETrackedDeviceProperty::Prop_ModelNumber_String).value_or("Unknown Device");
-        std::cout << device_name << " (" << pose.first << ")" << std::endl;
-        for (auto prop : props.m_propertyValues) {
-            std::cout << std::left << std::setw(60) << "> " + props.m_propertyKeys.at(prop.first) << prop.second << std::endl;
-        }
-        std::cout << std::endl;
-    }
-    return std::nullopt;*/
-
     while (!glfwWindowShouldClose(this->m_window) && !this->m_doExit)
     {
         if (this->m_doRefresh) {
             this->m_doRefresh = false;
-            this->m_driverInfoCache = this->m_client->getDrivers();
-            this->m_devicePoseCache = this->m_client->getPoses();
-            this->m_devicePropsCache.clear();
-            this->m_devicePropsCache.reserve(this->m_devicePoseCache.size());
+            auto drivers = this->m_vrClient->getDrivers();
+            this->m_driverInfoCache.clear();
+            std::transform(drivers.begin(), drivers.end(), std::back_inserter(this->m_driverInfoCache), 
+                [](std::pair<std::string, bool> driver)->std::tuple<std::string, bool, bool>{
+                    return { driver.first, driver.second, false };
+                }
+            );
 
-            std::for_each(this->m_devicePoseCache.begin(), this->m_devicePoseCache.end(), [&](auto pose) {this->m_devicePropsCache.push_back(std::make_pair(pose.first, this->m_client->getProperties(pose.first))); });
+            this->m_devices.clear();
+            for (vr::TrackedDeviceIndex_t idx = 0; idx < vr::k_unMaxTrackedDeviceCount; idx++) {
+                if (this->m_vrClient->isDeviceConnected(idx)) {
+                    this->m_devices.push_back(OpenVRDevice(this->m_vrClient, idx));
+                }
+            }
         }
 
         this->beginFrame();
@@ -91,7 +78,7 @@ std::optional<GuiApplication::ErrorCode> GuiApplication::run()
                 if (ImGui::BeginMenu("Drivers")) {
                     for (auto driver : this->m_driverInfoCache) {
                         bool selected = false;
-                        ImGui::MenuItem(driver.first.c_str(), NULL, &selected);
+                        ImGui::MenuItem(std::get<0>(driver).c_str(), NULL, &selected);
                         if (selected) {
                             // make driver window
                         }
@@ -100,9 +87,10 @@ std::optional<GuiApplication::ErrorCode> GuiApplication::run()
                 }
 
                 if (ImGui::BeginMenu("Devices")) {
-                    for (auto device : this->m_devicePropsCache) {
-                        bool selected = false;
-                        ImGui::MenuItem((device.second.getProperty(vr::Prop_ModelNumber_String).value_or("Unnamed") + " (" + device.second.getProperty(vr::Prop_SerialNumber_String).value_or("") + ")").c_str(), NULL, &selected);
+                    for (auto device : this->m_devices) {
+                        bool selected;
+                        auto properties = device.getProperties();
+                        ImGui::MenuItem((properties.getProperty(vr::Prop_ModelNumber_String).value_or("Unnamed") + " (" + properties.getProperty(vr::Prop_SerialNumber_String).value_or("") + ")").c_str(), NULL, &selected);
                         if (selected) {
                             // make device window
                         }

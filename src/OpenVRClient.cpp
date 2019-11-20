@@ -9,21 +9,15 @@ OpenVRClient::OpenVRClient()
         m_vrSystem = nullptr;
         throw std::exception(vr::VR_GetVRInitErrorAsEnglishDescription(error));
     }
-
 }
 
-std::vector<std::pair<vr::TrackedDeviceIndex_t, vr::TrackedDevicePose_t>> OpenVRClient::getPoses()
+vr::TrackedDevicePose_t OpenVRClient::getPose(vr::TrackedDeviceIndex_t device_index)
 {
-    std::vector<std::pair<vr::TrackedDeviceIndex_t, vr::TrackedDevicePose_t>> poses;
-    for (auto i = 0u; i < vr::k_unMaxTrackedDeviceCount; i++) {
-        if (vr::VRSystem()->IsTrackedDeviceConnected(i)) {
-            vr::TrackedDevicePose_t pose;
-            vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::ETrackingUniverseOrigin::TrackingUniverseRawAndUncalibrated, 0, &pose, 1);
-            poses.push_back({ i, pose });
-        }
-    }
-    return poses;
+    std::array<vr::TrackedDevicePose_t, vr::k_unMaxTrackedDeviceCount> poses;
+    vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::ETrackingUniverseOrigin::TrackingUniverseRawAndUncalibrated, 0, poses.data(), vr::k_unMaxTrackedDeviceCount);
+    return poses.at(device_index);
 }
+
 
 std::vector<std::pair<std::string, bool>> OpenVRClient::getDrivers()
 {
@@ -98,6 +92,11 @@ DeviceProperties OpenVRClient::getProperties(vr::TrackedDeviceIndex_t index)
         props.setProperty(propKey.first, "<unknown value type>");
     }
     return props;
+}
+
+bool OpenVRClient::isDeviceConnected(vr::TrackedDeviceIndex_t index)
+{
+    return vr::VRSystem()->IsTrackedDeviceConnected(index);
 }
 
 OpenVRClient::~OpenVRClient()
