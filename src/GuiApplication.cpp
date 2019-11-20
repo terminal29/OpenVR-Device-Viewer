@@ -57,10 +57,10 @@ std::optional<GuiApplication::ErrorCode> GuiApplication::run()
                 }
             );
 
-            this->m_devices.clear();
+            this->m_deviceWindows.clear();
             for (vr::TrackedDeviceIndex_t idx = 0; idx < vr::k_unMaxTrackedDeviceCount; idx++) {
                 if (this->m_vrClient->isDeviceConnected(idx)) {
-                    this->m_devices.push_back(OpenVRDevice(this->m_vrClient, idx));
+                    this->m_deviceWindows.push_back(std::make_unique<DeviceWindow>(std::make_shared<OpenVRDevice>(this->m_vrClient, idx)));
                 }
             }
         }
@@ -87,21 +87,21 @@ std::optional<GuiApplication::ErrorCode> GuiApplication::run()
                 }
 
                 if (ImGui::BeginMenu("Devices")) {
-                    for (auto device : this->m_devices) {
-                        bool selected;
-                        auto properties = device.getProperties();
-                        ImGui::MenuItem((properties.getProperty(vr::Prop_ModelNumber_String).value_or("Unnamed") + " (" + properties.getProperty(vr::Prop_SerialNumber_String).value_or("") + ")").c_str(), NULL, &selected);
-                        if (selected) {
-                            // make device window
+                    for (auto& deviceWindow : this->m_deviceWindows) {
+                        if (ImGui::MenuItem(deviceWindow->getWindowName().c_str(), nullptr, nullptr)) {
+                            deviceWindow->show();
                         }
+                        
                     }
                     ImGui::EndMenu();
                 }
-
-                ImGui::EndMainMenuBar();
             }
+            ImGui::EndMainMenuBar();
 
 
+            for (auto& deviceWindow : this->m_deviceWindows) {
+                deviceWindow->draw();
+            }
 
 
         }

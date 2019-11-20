@@ -14,6 +14,7 @@
 
 #include <OpenVRClient.hpp>
 #include <OpenVRDevice.hpp>
+#include <DeviceWindow.hpp>
 
 class GuiApplication {
 public:
@@ -42,6 +43,6 @@ private:
 
     std::vector<std::tuple<std::string, bool, bool>> m_driverInfoCache;
 
-    std::vector<OpenVRDevice> m_devices;
+    std::vector<std::unique_ptr<DeviceWindow>> m_deviceWindows;
 
 };

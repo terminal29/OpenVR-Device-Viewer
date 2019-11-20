@@ -9,6 +9,8 @@ class DeviceWindow {
 public:
     DeviceWindow(std::shared_ptr<OpenVRDevice> device);
 
+    std::string getWindowName();
+
     void show();
 
     void hide();

@@ -7,6 +7,11 @@ DeviceWindow::DeviceWindow(std::shared_ptr<OpenVRDevice> device):
 {
 }
 
+std::string DeviceWindow::getWindowName()
+{
+    return this->m_windowName;
+}
+
 void DeviceWindow::show()
 {
     this->m_isVisible = true;
@@ -23,10 +28,22 @@ void DeviceWindow::draw()
         return;
     bool doKeepOpen = true;
     if (ImGui::Begin(this->m_windowName.c_str(), &doKeepOpen)) {
+        auto props = this->m_device->getProperties();
 
+        if (ImGui::CollapsingHeader("Device Properties"))
+        {
+            ImGui::Columns(2);
+            for (auto prop : props.m_propertyValues) {
+                ImGui::Text("%s", props.m_propertyKeys.at(prop.first).c_str());
+            }
+            ImGui::NextColumn();
+            for (auto prop : props.m_propertyValues) {
+                ImGui::Text("%s", prop.second.c_str());
+            }
+        }
     }
     ImGui::End();
     if (!doKeepOpen)
-        this->m_isVisible = false;
+        this->hide();
 
 }
