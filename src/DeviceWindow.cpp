@@ -45,13 +45,14 @@ void DeviceWindow::draw()
             for (auto prop : props.m_propertyValues) {
                 ImGui::Text("%s", prop.second.c_str());
             }
+            ImGui::EndColumns();
         }
 
         if (ImGui::CollapsingHeader("Device Pose"))
         {
             auto pose = OpenVRDevice::toEigenPose(this->m_device->getPose().mDeviceToAbsoluteTracking);
-            
-            ImGui::gizmo3D("##gizmo1", quat(pose.first.w(), pose.first.x(), pose.first.y(), pose.first.z())  /*, size,  mode */);
+            ImVec2 region = ImGui::GetContentRegionAvail();
+            ImGui::gizmo3D("DeviceGizmo", quat(pose.first.w(), pose.first.x(), pose.first.y(), pose.first.z()), region.x);
         }
 
     }
