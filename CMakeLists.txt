@@ -9,8 +9,8 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 file(GLOB_RECURSE SOURCES src/*.cpp)
 file(GLOB_RECURSE HEADERS include/*.hpp include/*.h)
 
-file(GLOB IMGUI_SOURCES 3rdparty/imgui/*.cpp)
-file(GLOB IMGUI_HEADERS 3rdparty/imgui/*.h 3rdparty/imgui/*.hpp)
+file(GLOB IMGUI_SOURCES 3rdparty/imgui/*.cpp 3rdparty/imGuIZMO.quat/imGuIZMO.quat/*.cpp)
+file(GLOB IMGUI_HEADERS 3rdparty/imgui/*.h 3rdparty/imgui/*.hpp 3rdparty/imGuIZMO.quat/imGuIZMO.quat/*.h)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -25,6 +25,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/3rdparty/openvr/bin/win64/openvr_api.dll DESTINATI
 # Imgui headers and sources
 target_include_directories(OpenVR_Device_Viewer PUBLIC 3rdparty/imgui)
 target_include_directories(OpenVR_Device_Viewer PUBLIC 3rdparty/imgui/examples)
+target_include_directories(OpenVR_Device_Viewer PUBLIC 3rdparty/imGuIZMO.quat/imGuIZMO.quat)
 add_library(imgui ${IMGUI_SOURCES} ${IMGUI_HEADERS})
 target_link_libraries(OpenVR_Device_Viewer $<TARGET_LINKER_FILE:imgui>)
 
@@ -43,3 +44,6 @@ target_link_libraries(OpenVR_Device_Viewer ${CMAKE_SOURCE_DIR}/3rdparty/glew-2.1
 file(COPY ${CMAKE_SOURCE_DIR}/3rdparty/glew-2.1.0/bin/Release/x64/glew32.dll DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Debug)
 find_package(OpenGL REQUIRED)
 target_link_libraries(OpenVR_Device_Viewer ${OPENGL_gl_LIBRARY})
+
+# Eigen headers
+target_include_directories(OpenVR_Device_Viewer PUBLIC 3rdparty/eigen-git-mirror)

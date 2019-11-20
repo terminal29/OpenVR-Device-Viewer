@@ -33,10 +33,10 @@ void DeviceWindow::draw()
         return;
     bool doKeepOpen = true;
     if (ImGui::Begin(this->m_windowName.c_str(), &doKeepOpen)) {
-        auto props = this->m_device->getProperties();
 
         if (ImGui::CollapsingHeader("Device Properties"))
         {
+            auto props = this->m_device->getProperties();
             ImGui::Columns(2);
             for (auto prop : props.m_propertyValues) {
                 ImGui::Text("%s", props.m_propertyKeys.at(prop.first).c_str());
@@ -46,6 +46,14 @@ void DeviceWindow::draw()
                 ImGui::Text("%s", prop.second.c_str());
             }
         }
+
+        if (ImGui::CollapsingHeader("Device Pose"))
+        {
+            auto pose = OpenVRDevice::toEigenPose(this->m_device->getPose().mDeviceToAbsoluteTracking);
+            
+            ImGui::gizmo3D("##gizmo1", quat(pose.first.w(), pose.first.x(), pose.first.y(), pose.first.z())  /*, size,  mode */);
+        }
+
     }
     ImGui::End();
     if (!doKeepOpen)

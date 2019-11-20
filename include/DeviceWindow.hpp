@@ -3,6 +3,8 @@
 #include <memory>
 
 #include <imgui.h>
+#include <Eigen/Eigen>
+#include <imGuIZMOquat.h>
 #include <OpenVRDevice.hpp>
 
 class DeviceWindow {

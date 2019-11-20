@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include <Eigen/Eigen>
 #include <OpenVRClient.hpp>
 
 class OpenVRDevice {
@@ -13,6 +14,8 @@ public:
     bool isConnected();
 
     vr::TrackedDevicePose_t getPose();
+
+    static std::pair<Eigen::Quaternionf, Eigen::Vector3f> toEigenPose(const vr::HmdMatrix34_t& mat);
 
     vr::TrackedDeviceIndex_t getIndex();
 
